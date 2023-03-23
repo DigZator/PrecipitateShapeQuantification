@@ -63,3 +63,27 @@ cv2.waitKey(0)
 
 cv2.imshow('hello', img_lis[0])
 cv2.waitKey(0)
+
+barycents = np.zeros((len(img_lis), 6))
+
+for i, preci in enumerate(img_lis):
+  shor = np.sum(~preci, axis = 1)
+  sver = np.sum(~preci, axis = 0)
+  print(i, shor, sver)
+  print(preci.shape, len(shor), len(sver))
+  barx = 0
+  bary = 0
+  for k, sh in enumerate(shor):
+    bary += k*sh
+  bary = bary/np.sum(shor)
+  for k, sv in enumerate(sver):
+    barx += k*sv
+  barx = barx/np.sum(sver)
+  print(bary, barx)
+  barycents[i, 0] = bary
+  barycents[i, 1] = barx
+
+print(barycents)
+
+for i, perci in enumerate(img_lis):
+  pass
