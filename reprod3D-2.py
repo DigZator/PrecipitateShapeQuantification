@@ -16,15 +16,15 @@ def get_data_size(fn):
     return data.shape[0]
 
 # print(get_data_size(samp))
-# fig = plt.figure()
-# ax = fig.add_subplot(projection='3d')
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
 
 iner_val = []
 
+Alist, Anlist = [], []
+
 for filename in os.listdir(dir_path):
     reader = XMLIDReader()
-    # samp = XMLIDReader(FileName=[dir_path + filename])
-    # samp.PointArrayStatus = ['data']
     reader.SetFileName(dir_path + filename)
     reader.Update()
     imdat = reader.GetOutput()
@@ -35,26 +35,26 @@ for filename in os.listdir(dir_path):
     rows, cols, _ = imdat.GetDimensions()
     # print(a.reshape(rows, cols, -1))
     a = a.reshape(rows, cols, -1)
-    # xapp, yapp, zapp = [], [], []
-    # for x in range(rows):
-    #     for y in range(cols):
-    #         for z in range(cols):
-    #             if a[x,y,z] == 1:
-    #                 xapp.append(x)
-    #                 yapp.append(y)
-    #                 zapp.append(z)
-    # ax.scatter(xapp, yapp, zapp, marker = 'o')
-    # plt.show()
-    # break
+    
     µ100 = 0
     µ010 = 0
     µ001 = 0
+
+    xapp, yapp, zapp = [], [], []
     for x in range(rows):
         for y in range(cols):
             for z in range(cols):
-                µ100 += x * a[x,y,z]
-                µ010 += y * a[x,y,z]
-                µ001 += z * a[x,y,z]
+                if a[z,y,x] == 1:
+                    xapp.append(x)
+                    yapp.append(y)
+                    zapp.append(z)
+                µ100 += x * a[z,y,x]
+                µ010 += y * a[z,y,x]
+                µ001 += z * a[z,y,x]
+    # fig = plt.figure()
+    # ax = fig.add_subplot(projection='3d')
+    # ax.scatter(xapp, yapp, zapp, marker = 'o')
+    # plt.show()
     
     tot = np.sum(a)
     x0, y0, z0 = [µ100/tot, µ010/tot, µ001/tot]
@@ -67,12 +67,12 @@ for filename in os.listdir(dir_path):
     for x in range(rows):
         for y in range(cols):
             for z in range(cols):
-                µ002 += ((x - x0)**0) * ((y - y0)**0) * ((z - z0)**2) * a[x,y,z]
-                µ020 += ((x - x0)**0) * ((y - y0)**2) * ((z - z0)**0) * a[x,y,z]
-                µ200 += ((x - x0)**2) * ((y - y0)**0) * ((z - z0)**0) * a[x,y,z]
-                µ011 += ((x - x0)**0) * ((y - y0)**1) * ((z - z0)**1) * a[x,y,z]
-                µ101 += ((x - x0)**1) * ((y - y0)**0) * ((z - z0)**1) * a[x,y,z]
-                µ110 += ((x - x0)**1) * ((y - y0)**1) * ((z - z0)**0) * a[x,y,z]
+                µ002 += ((x - x0)**0) * ((y - y0)**0) * ((z - z0)**2) * a[z,y,x]
+                µ020 += ((x - x0)**0) * ((y - y0)**2) * ((z - z0)**0) * a[z,y,x]
+                µ200 += ((x - x0)**2) * ((y - y0)**0) * ((z - z0)**0) * a[z,y,x]
+                µ011 += ((x - x0)**0) * ((y - y0)**1) * ((z - z0)**1) * a[z,y,x]
+                µ101 += ((x - x0)**1) * ((y - y0)**0) * ((z - z0)**1) * a[z,y,x]
+                µ110 += ((x - x0)**1) * ((y - y0)**1) * ((z - z0)**0) * a[z,y,x]
     iner_val.append([µ002,
                     µ020,
                     µ200,
@@ -80,14 +80,27 @@ for filename in os.listdir(dir_path):
                     µ101,
                     µ110])
     inermat = np.array([[µ020 + µ002, -µ110, -µ101],
-                        [-µ110, µ200 + µ002, -µ001],
-                        [-µ101, -µ001, µ200 + µ020]])
+                        [-µ110, µ200 + µ002, -µ011],
+                        [-µ101, -µ011, µ200 + µ020]])
     w, v = np.linalg.eig(inermat)
+    # print(w)
     w.sort()
+    # print(w)
     A = np.sqrt((w[1] + w[2] - w[0])/(w[0] + w[1] - w[2]))
     B = np.sqrt((w[1] + w[2] - w[0])/(w[0] + w[2] - w[1]))
     Ap = np.sqrt(A**2/B)
     print(filename)
-    print(A, B, Ap)
-    print(x0, y0, z0)
+    print(f"A = {A:.2f}, B = {B:.2f}, Ap = {Ap:.2f}")
+    # print(x0, y0, z0)
+    RM = (0.75*(tot/np.pi)*Ap)**(1/3)
+    RE = RM * (Ap**(-1/3))
+    print(f"RM = {RM:.2f}, RE = {RE:.2f}")
+    xexnt, yexnt, zexnt = (max(xapp) - min(xapp)), (max(yapp) - min(yapp)), (max(zapp) - min(zapp))
+    An, Bn = xexnt/zexnt, xexnt/yexnt
+    print(f"An = {An:.2f} Bn = {Bn:.2f}")
+    print()
+    Anlist.append(An)
+    Alist.append(A)
 print(iner_val)
+plt.plot(Anlist, Alist)
+plt.show()
