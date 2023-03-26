@@ -16,12 +16,13 @@ def get_data_size(fn):
     return data.shape[0]
 
 # print(get_data_size(samp))
-fig = plt.figure()
-ax = fig.add_subplot(projection='3d')
+# fig = plt.figure()
+# ax = fig.add_subplot(projection='3d')
 
 iner_val = []
 
 Alist, Anlist = [], []
+Agiven = []
 
 for filename in os.listdir(dir_path):
     reader = XMLIDReader()
@@ -101,6 +102,10 @@ for filename in os.listdir(dir_path):
     print()
     Anlist.append(An)
     Alist.append(A)
+    Agiven.append(int(filename.split("_")[2]))
 print(iner_val)
-plt.plot(Anlist, Alist)
+plt.figure()
+plt.scatter(Anlist, Alist, c = 'blue')
+plt.scatter(Agiven, Alist, c = 'red')
+plt.plot([0,10], [0,10])
 plt.show()
