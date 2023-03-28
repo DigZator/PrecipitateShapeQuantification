@@ -102,7 +102,7 @@ for filename in os.listdir(dir_path):
     print()
     Anlist.append(An)
     Alist.append(A)
-    Agiven.append(int(filename.split("_")[2]))
+    Agiven.append(float(filename.split("_")[2]))
 print(iner_val)
 plt.figure()
 plt.scatter(Anlist, Alist, c = 'blue')
