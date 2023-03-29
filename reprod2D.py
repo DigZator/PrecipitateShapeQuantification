@@ -46,49 +46,40 @@ def preprocess(img):
   return out, img_lis
 
 def get_aspect__ratio(preci):
-  shor = np.sum(~preci/255, axis = 1)
-  sver = np.sum(~preci/255, axis = 0)
+  preci = np.where((preci==0)|(preci==1), preci^1, preci)
+  shor = np.sum(preci, axis = 1)
+  sver = np.sum(preci, axis = 0)
   verlen, horlen = len(shor), len(sver)
-  print(i, shor, sver)
-  print(preci.shape, len(shor), len(sver))
+  # print(i, shor, sver)
+  # print(preci.shape, len(shor), len(sver))
   barx = 0
   bary = 0
-  for k, sh in enumerate(shor):
-    bary += (k + 1) * sh
-  bary = (bary/np.sum(shor)) - 1
-  for k, sv in enumerate(sver):
-    barx += (k + 1) * sv
-  barx = (barx/np.sum(sver)) - 1
+  sumx = 0
+  sumy = 0
+  for y in range(verlen):
+    for x in range(horlen):
+      barx += (x + 1) * preci[y,x]
+      bary += (y + 1) * preci[y,x]
+      sumx += preci[y,x]
+  barx = barx/sumx
+  bary = bary/sumx
   print(bary, barx)
-  µ002 = 0
   µ020 = 0
   µ200 = 0
-  µ011 = 0 
   µ110 = 0
-  µ101 = 0
   z = 1
   for y in range(verlen):
     for x in range(horlen):
-      µ002 += ((x - barx)**0 ) * ((y - bary)**0 ) * (z**2 ) * preci[y,x]
-      µ020 += ((x - barx)**0 ) * ((y - bary)**2 ) * (z**0 ) * preci[y,x]
-      µ200 += ((x - barx)**2 ) * ((y - bary)**0 ) * (z**0 ) * preci[y,x]
-      µ011 += ((x - barx)**0 ) * ((y - bary)**1 ) * (z**1 ) * preci[y,x] 
-      µ110 += ((x - barx)**1 ) * ((y - bary)**1 ) * (z**0 ) * preci[y,x]
-      µ101 += ((x - barx)**1 ) * ((y - bary)**0 ) * (z**1 ) * preci[y,x]
-  iner_val.append([µ002,
-                    µ020,
-                    µ200,
-                    µ011,
-                    µ101,
-                    µ110])
-  inermat = np.array([[µ020 + µ002, -µ110, -µ101],
-                        [-µ110, µ200 + µ002, -µ011],
-                        [-µ101, -µ011, µ200 + µ020]])
+      µ020 += ((x - barx)**0) * ((y - bary)**2) * (z**0) * preci[y,x]
+      µ200 += ((x - barx)**2) * ((y - bary)**0) * (z**0) * preci[y,x] 
+      µ110 += ((x - barx)**1) * ((y - bary)**1) * (z**0) * preci[y,x]
+  inermat = np.array([[µ200, µ110],
+                      [µ110, µ020]])
   w, v = np.linalg.eig(inermat)
   # print(w)
   w.sort()
   # print(w)
-  A = np.sqrt((w[1] + w[2] - w[0])/(w[0] + w[1] - w[2]))
+  A = np.sqrt(w[1]/w[0])
   RM = ((np.sum(sver)/np.pi)*A)**0.5
   RE = RM * (A**(-1/3))
   return A, RM, RE
@@ -109,5 +100,6 @@ cv2.waitKey(0)
 iner_val = []
 
 for i, preci in enumerate(img_lis):
+  preci = np.array(preci/255, dtype = int)
   A, RM, RE = get_aspect__ratio(preci)
   print(f"A = {A:.2f}, RM = {RM:.2f}, RE = {RE:.2f}")
