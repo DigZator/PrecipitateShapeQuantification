@@ -5,6 +5,8 @@ from paraview import servermanager as sm
 import vtk.numpy_interface.dataset_adapter as dsa
 import pandas as pd
 
+# Decrepit
+
 dir_path = 'E:\\Seagate Drive\\OM\\Internship\\PrecipitateShapeQuantification\\benchmark_shapes\\3D_5500px\\'
 
 # get active view
