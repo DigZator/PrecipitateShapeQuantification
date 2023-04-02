@@ -45,7 +45,7 @@ def preprocess(img):
   # final_img = post_process(img,bbox_lis,result)
   return out, img_lis
 
-def get_aspect__ratio(preci):
+def get_aspect_ratio(preci):
   preci = np.where((preci==0)|(preci==1), preci^1, preci)
   shor = np.sum(preci, axis = 1)
   sver = np.sum(preci, axis = 0)
@@ -84,32 +84,34 @@ def get_aspect__ratio(preci):
   RE = RM * (A**(-1/3))
   return A, RM, RE
 
-# dir_path = 'D:\\Internship\\PrecipitateShapeQuantification\\benchmark_shapes\\2D_370px_rotated\\'
-dir_path = 'D:\\Internship\\PrecipitateShapeQuantification\\benchmark_shapes\\2D_370px\\'
-dir_path = 'D:\\Internship\\PrecipitateShapeQuantification\\benchmark_shapes\\2D_5000px\\'
 
-Agive = []
-Acalc = []
+if __name__ == "__main__":
+  # dir_path = 'D:\\Internship\\PrecipitateShapeQuantification\\benchmark_shapes\\2D_370px_rotated\\'
+  dir_path = 'D:\\Internship\\PrecipitateShapeQuantification\\benchmark_shapes\\2D_370px\\'
+  dir_path = 'D:\\Internship\\PrecipitateShapeQuantification\\benchmark_shapes\\2D_5000px\\'
 
-for filename in os.listdir(dir_path):
-  img = cv2.imread(dir_path + filename)
-  gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-  img, img_lis = preprocess(gray)
-  # cv2.imshow(filename, img)
-  # cv2.waitKey(0)
-  iner_val = []
-  # cv2.imshow(filename, img_lis[0])
-  # cv2.waitKey(0)
-  print(filename)
-  for i, preci in enumerate(img_lis):
-    preci = np.array(preci/255, dtype = int)
-    A, RM, RE = get_aspect__ratio(preci)
-    print(f"A = {A:.2f}, RM = {RM:.2f}, RE = {RE:.2f}")
-    Acalc.append(A)
-    # Agive.append(float(filename.split("_")[0]))
-    Agive.append(len(preci[0])/len(preci))
+  Agive = []
+  Acalc = []
 
-plt.figure()
-plt.scatter(Agive, Acalc, c = 'blue')
-plt.plot([0,20], [0,20])
-plt.show()
+  for filename in os.listdir(dir_path):
+    img = cv2.imread(dir_path + filename)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img, img_lis = preprocess(gray)
+    # cv2.imshow(filename, img)
+    # cv2.waitKey(0)
+    iner_val = []
+    # cv2.imshow(filename, img_lis[0])
+    # cv2.waitKey(0)
+    print(filename)
+    for i, preci in enumerate(img_lis):
+      preci = np.array(preci/255, dtype = int)
+      A, RM, RE = get_aspect_ratio(preci)
+      print(f"A = {A:.2f}, RM = {RM:.2f}, RE = {RE:.2f}")
+      Acalc.append(A)
+      # Agive.append(float(filename.split("_")[0]))
+      Agive.append(len(preci[0])/len(preci))
+
+  plt.figure()
+  plt.scatter(Agive, Acalc, c = 'blue')
+  plt.plot([0,20], [0,20])
+  plt.show()
