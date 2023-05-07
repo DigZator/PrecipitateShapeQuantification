@@ -45,8 +45,9 @@ def preprocess(img):
   # final_img = post_process(img,bbox_lis,result)
   return out, img_lis
 
-def get_aspect_ratio(preci):
-  preci = np.where((preci==0)|(preci==1), preci^1, preci)
+def get_aspect_ratio(preci, flip = True):
+  if flip:
+    preci = np.where((preci==0)|(preci==1), preci^1, preci)
   shor = np.sum(preci, axis = 1)
   sver = np.sum(preci, axis = 0)
   verlen, horlen = len(shor), len(sver)
@@ -63,7 +64,7 @@ def get_aspect_ratio(preci):
       sumx += preci[y,x]
   barx = barx/sumx
   bary = bary/sumx
-  print(bary, barx)
+  # print(bary, barx)
   µ020 = 0
   µ200 = 0
   µ110 = 0
@@ -78,7 +79,7 @@ def get_aspect_ratio(preci):
   w, v = np.linalg.eig(inermat)
   # print(w)
   w.sort()
-  print(w)
+  # print(w)
   A = np.sqrt(w[1]/w[0])
   RM = ((np.sum(sver)/np.pi)*A)**0.5
   RE = RM * (A**(-1/3))
@@ -87,7 +88,7 @@ def get_aspect_ratio(preci):
 
 if __name__ == "__main__":
   # dir_path = 'D:\\Internship\\PrecipitateShapeQuantification\\benchmark_shapes\\2D_370px_rotated\\'
-  dir_path = 'D:\\Internship\\PrecipitateShapeQuantification\\benchmark_shapes\\2D_370px\\'
+  # dir_path = 'D:\\Internship\\PrecipitateShapeQuantification\\benchmark_shapes\\2D_370px\\'
   dir_path = 'D:\\Internship\\PrecipitateShapeQuantification\\benchmark_shapes\\2D_5000px\\'
 
   Agive = []
