@@ -4,3 +4,4 @@ import os
 import matplotlib.pyplot as plt
 from pyzbar.pyzbar import decode
 import pprint
+import itertools as it
