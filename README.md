@@ -75,3 +75,30 @@ For a 2D precipitate the interia matrix is defined in [MacSleyne et. al](https:/
     - This is an algorithm that is used to find connected components, in this case it is used to find clusters.
     - The algorithm checks the value of each pixel, and its neighbours and determines whether it is a part of cluster or not.
     - Further if the input image is a periodic image then a modification is made in the algorithm to connect the two parts of a precipitate that is divided by the border.
+
+### `reprod3D-2`
+
+- Objective - Accept 3D image data and calulate the aspect ratio of the precipitates.
+- Method
+  - First the coordinate of the barycenter is calculated.
+  - Then the inertia matrix is formed using the second order moments of the precipitate.
+  - Then the aspect ratio is calculated, using the formula mentioned above.
+  - Graph is plotted which shows that the expected aspect ratio and calculated aspect ratio as similar.
+- Drawbacks - This code only works if the image contains only a single precipitate.
+
+### `reprod3D(Decrepit).py`
+
+- Objective - Accept 3D image data and calulate the aspect ratio of the precipitates.
+- This was an attempt to use Paraview to handle the 3D image.
+- Other method showed faster results, leaving this code obselete.
+
+### `test.py`
+
+- Objective - To the test the alogrithm on new input data.
+
+## References
+
+1. Schleifer, F., Müller, M., Lin, YY. et al. Consistent Quantification of Precipitate Shapes and Sizes in Two and Three Dimensions Using Central Moments. Integr Mater Manuf Innov 11, 159–171 (2022).
+   https://doi.org/10.1007/s40192-022-00259-2
+2. J.P. MacSleyne, J.P. Simmons, M. De Graef, On the use of 2-D moment invariants for the automated classification of particle shapes, Acta Materialia, Volume 56, Issue 3, 2008, Pages 427-437, ISSN 1359-6454.
+   https://doi.org/10.1016/j.actamat.2007.09.039
