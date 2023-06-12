@@ -3,14 +3,6 @@ def preprocess(img):
   # Pass the GRAY image to the function
   image = img.copy()
 
-  # # To make image more suitable to detect contours(to increase or decrease seprartion between two objects)
-  # image = cv2.erode(image, None, iterations=4)
-  # image = cv2.dilate(image, None, iterations=1)
-
-  # # Convert the image to grayscale and then to binary
-  # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-  # blurred = cv2.GaussianBlur(gray, (7, 7), 0)
-  # #Here, Adaptive thresholding is used to handle different lighting conditions
   binary = cv2.adaptiveThreshold(image, 
                             255, 
                             cv2.ADAPTIVE_THRESH_MEAN_C, 
