@@ -7,12 +7,15 @@ The following is an implementation of the Consistent Quantification of Precipita
 The paper discusses the need for quantification of precipitate particles in the field of Computational Microstructure, and how it can be done. The prior methods had a drawback of depending on the orientation of the precipitate. In order to tackle this issue we make use of Central Moments of the particles.
 
 The moments $\mu_{klm}$ are defined as the integral over the particle V
+
 $$
 \mu_{klm} = \int_V x^k y^l z^z dV
 $$
+
 Here x,y and z are the cartesian coordinates. The integer exponents k, l, and m decide the order of the moment as $(k+l+m)$
 
 The central moments $\bar\mu_{klm}$ are defined as
+
 $$
 \bar\mu_{klm} = \int_V\bar x^k\bar y^l\bar z^m dV
 $$
