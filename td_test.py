@@ -230,20 +230,24 @@ if __name__ == "__main__":
     d = {0:get_vals(get_preci(mat1))}
 
     for i in range(1, len(imgs)):
+    # temp = [lmat]
+    # for i in range(1, 4):
         npreci, nmat = extract_precipitates(imgs[i])
         nmat = comp_mats(lmat, nmat)
         npreci = get_preci(nmat)
         d[i] = get_vals(npreci)
         
-        # fig, axes = plt.subplots(1, 2, figsize=(12, 4))
-        # axes[0].imshow(lmat)
-        # axes[0].set_title('mat' + str(i-1))
-        # axes[1].imshow(nmat)
-        # axes[1].set_title('mat' + str(i))
-        # plt.tight_layout()
-        # plt.show()
+        # if i <= 4:
+        #     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+        #     axes[0].imshow(lmat)
+        #     axes[0].set_title('mat' + str(i-1))
+        #     axes[1].imshow(nmat)
+        #     axes[1].set_title('mat' + str(i))
+        #     plt.tight_layout()
+        #     plt.show()
 
-        lmat = nmat
+        lmat = nmat.copy()
+        # temp.append(nmat)
     
     uniqlab = set()
     for imno in d.keys():
@@ -264,10 +268,27 @@ if __name__ == "__main__":
             areamat[imno, key[k]] = d[imno][k][3]
     
     key = (np.array(list(key.items())))
-    # plt.figure(figsize=(12,20))
-    plt.imshow(areamat.T)
-    plt.colorbar()
-    plt.ylabel("Precipitate Label")
-    plt.xlabel("ImageNumber")
-    plt.yticks(key[:,1], key[:,0])
+    
+    areamat = areamat.T
+    fig, ax = plt.subplots()
+    im = ax.imshow(areamat)
+    cbar = plt.colorbar(im)
+    ax.set_ylabel("Precipitate Label")
+    ax.set_xlabel("ImageNumber")
+    ax.set_yticks(key[:,1], key[:,0])
+    ax.set_xticks(range(0, 51, 5))
+    cbar.set_label("Area of Precipitate (pixels)")
+    plt.show()
+
+    x = np.arange(areamat.shape[1])
+    y = np.arange(areamat.shape[0])
+    X, Y = np.meshgrid(x, y)
+    fig3 = plt.figure()
+    ax3 = fig3.add_subplot(111, projection = '3d')
+    # ax3.plot_surface(X, Y, areamat)
+    Z = areamat.flatten()
+    ax3.bar3d(X.ravel(), Y.ravel(), np.zeros_like(Z), 1, 1, Z)
+    ax3.set_ylabel("Precipitate Label")
+    ax3.set_xlabel("ImageNumber")
+    ax3.set_yticks(key[:,1], key[:,0])
     plt.show()

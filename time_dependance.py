@@ -189,6 +189,8 @@ def extract_precipitates(img):
 def comp_mats(mat1, mat2):
     m, n = mat1.shape
     mat = mat2.copy()
+    mat1_max = np.max(mat1)
+    mat[mat != 0] += mat1_max
     chglist = np.unique(mat1)
     for y in range(m):
         for x in range(n):
