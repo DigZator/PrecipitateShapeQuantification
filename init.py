@@ -6,3 +6,4 @@ from pyzbar.pyzbar import decode
 import pprint
 import itertools as it
 import csv
+import re
