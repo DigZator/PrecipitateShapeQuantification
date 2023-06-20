@@ -67,7 +67,7 @@ for bmf in bm_folders:
             plt.ylabel("Calculated")
             # plt.title(bmf)
             x = np.linspace(min(expectedA + calculatedA), max(expectedA + calculatedA), 100)
-            plt.plot(x, x, color='red') 
+            plt.plot(x, x, color='lightgray') 
             plt.grid(True)
             # plt.show()
             plt.savefig(oppath + bmf + ".png", bbox_inches = 'tight')
