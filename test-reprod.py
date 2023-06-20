@@ -4,14 +4,14 @@ from reprod3D import *
 
 curr = (os.getcwd())
 bm_folders = (os.listdir("benchmark_shapes"))
-
+oppath = "Results\\Reprod\\"
 koffset = 20
 
 for bmf in bm_folders:
     fpath = curr + "\\benchmark_shapes\\" + bmf
     imlist = (os.listdir(fpath))
     
-    if bmf[0] == "2a":
+    if bmf[0] == "2":
         imgs = []
         expectedA = []
         calculatedA = []
@@ -58,22 +58,25 @@ for bmf in bm_folders:
                 plt.hlines(y = data[exp]['calc'][0], xmin = min(ang), xmax = max(ang), color = "lightgray", linestyles = '--')
             plt.legend()
             plt.ylim(top = 8)
-            plt.show()
+            plt.savefig(oppath + bmf + ".png", bbox_inches = 'tight')
+            plt.clf()
+            # plt.show()
         else:
             plt.scatter(expectedA, calculatedA)
             plt.xlabel("Expected")
             plt.ylabel("Calculated")
-            plt.title(bmf)
+            # plt.title(bmf)
             x = np.linspace(min(expectedA + calculatedA), max(expectedA + calculatedA), 100)
-            plt.plot(x, x, color='red', label='x = y') 
+            plt.plot(x, x, color='red') 
             plt.grid(True)
-            plt.show()
+            # plt.show()
+            plt.savefig(oppath + bmf + ".png", bbox_inches = 'tight')
+            plt.clf()
     elif bmf[0] == "3":
-        loc = curr + "\\benchmark_shapes\\" + bmf
-        dat_str = np.empty((0,4))
-        for fname in os.listdir(loc):
+        dat_str = np.empty((0,8))
+        for fname in os.listdir(fpath):
             reader = XMLIDReader()
-            reader.SetFileName(loc+ "\\" + fname)
+            reader.SetFileName(fpath + "\\" + fname)
             reader.Update()
             imdat = reader.GetOutput()
 
@@ -82,12 +85,34 @@ for bmf in bm_folders:
             r, c, d = imdat.GetDimensions()
             a = a.reshape(r, c, d)
             A, B, Ap, RM, RE, An, Bn = get_aspect_ratio3D(a)
-            # print(fname)
-            # print(A, B, Ap, RM, RE, An, Bn)
-            dat_str = np.vstack((dat_str, np.array([A, B, An, Bn])))
-        plt.scatter(dat_str[:,2],dat_str[:,0])
-        x = np.linspace(np.min(dat_str[:,[0,2]]), np.min(dat_str[:,[0,2]]), 100)
-        plt.plot(x, x, color = 'lightgray')
-        plt.grid(True)
-        plt.show()
+            print(fname)
+            A1, A2 = fname.split("_")[2:5:2]
+            print(f"A - {A:.2f}, B - {B:.2f}, Ap - {Ap:.2f}\nAn - {An:.2f}, Bn - {Bn:.2f}")
+            dat_str = np.vstack((dat_str, np.array([A, B, Ap, An, Bn, float(A1), float(A2), np.sum(a)])))
+        dat_str = np.round(dat_str, decimals = 2)
+        print(dat_str)
+        
+        opname = oppath + (bmf + ".csv")
+        with open(opname, "w", newline="") as f:
+            wrt = csv.writer(f)
+            wrt.writerow(["Image", "A", "B", "Ap", "An", "Bn", "A1", "A2", "Volume"])
+            for i, fname in enumerate(os.listdir(fpath)):
+                wrt.writerow([fname] + list(dat_str[i]))
 
+        plt.scatter(dat_str[:, 5], dat_str[:, 0])
+        x = np.linspace(np.min(dat_str[:, [0, 5]]), np.max(dat_str[:, [0, 5]]), 100)
+        plt.plot(x,x, color = 'lightgray')
+        plt.grid(True)
+        plt.xlabel("Expected Value")
+        plt.ylabel("Calculated Value")
+        plt.savefig(oppath + bmf +"AvsA1.png", bbox_inches = 'tight')
+        plt.clf()
+
+        # plt.scatter(dat_str[:, 6], dat_str[:, 1])
+        # x = np.linspace(np.min(dat_str[:,[1, 6]]), np.max(dat_str[:,[1, 6]]), 100)
+        # plt.plot(x, x, color = 'lightgray')
+        # plt.grid(True)
+        # plt.xlabel("Expected Value")
+        # plt.ylabel("Calculated Value")
+        # plt.savefig(oppath + bmf + "BvsA2.png", bbox_inches = 'tight')
+        # plt.clf()
