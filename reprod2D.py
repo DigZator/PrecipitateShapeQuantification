@@ -1,5 +1,46 @@
 from init import *
-from reprod2D_Test import get_aspect_ratio
+
+clusterAliases = {}
+
+def get_aspect_ratio(preci, flip = True):
+  if flip:
+    preci = np.where((preci==0)|(preci==1), preci^1, preci)
+  shor = np.sum(preci, axis = 1)
+  sver = np.sum(preci, axis = 0)
+  verlen, horlen = len(shor), len(sver)
+  # print(i, shor, sver)
+  # print(preci.shape, len(shor), len(sver))
+  barx = 0
+  bary = 0
+  sumx = 0
+  sumy = 0
+  for y in range(verlen):
+    for x in range(horlen):
+      barx += (x + 1) * preci[y,x]
+      bary += (y + 1) * preci[y,x]
+      sumx += preci[y,x]
+  barx = barx/sumx
+  bary = bary/sumx
+#   print(bary, barx)
+  µ020 = 0
+  µ200 = 0
+  µ110 = 0
+  z = 1
+  for y in range(verlen):
+    for x in range(horlen):
+      µ020 += ((x - barx)**0) * ((y - bary)**2) * (z**0) * preci[y,x]
+      µ200 += ((x - barx)**2) * ((y - bary)**0) * (z**0) * preci[y,x] 
+      µ110 += ((x - barx)**1) * ((y - bary)**1) * (z**0) * preci[y,x]
+  inermat = np.array([[µ200, µ110],
+                      [µ110, µ020]])
+  w, v = np.linalg.eig(inermat)
+  # print(w)
+  w.sort()
+  # print(w)
+  A = np.sqrt(w[1]/w[0])
+  RM = ((np.sum(sver)/np.pi)*A)**0.5
+  RE = RM * (A**(-1/3))
+  return A, RM, RE
 
 ####### Contours Methods #######
 
@@ -157,7 +198,10 @@ def mkcluster(img):
     global clusterAliases
 
     mat = [[1 if a else 0 for a in line] for line in img]
-    clusterAliases.clear()
+    try:
+        clusterAliases.clear()
+    except NameError:
+        clusterAliases = {}
     currval = 2
     # print(mat)
     hkalg(mat)
@@ -189,20 +233,22 @@ def extract_precipitates(img, off_set = 1, wkey = False):
     clx, cly = np.array(clx), np.array(cly)
     
     # Dealing with edge particles, by changing their coordinates. First dealing with the left/right precipitates then the up/down precipitates
-    for cx in clx[:,0]:
-        try:
-            coords = clusterdict[cx]
-            coords[:, 1] = (coords[:, 1] + n//2)%n
-            clusterdict[cx] = coords
-        except KeyError:
-            pass
-    for cy in cly[:,0]:
-        try:
-            coords = clusterdict[cy]
-            coords[:,0] = (coords[:,0] + m//2)%m
-            clusterdict[cy] = coords
-        except KeyError:
-            pass
+    if len(clx):
+        for cx in clx[:,0]:
+            try:
+                coords = clusterdict[cx]
+                coords[:, 1] = (coords[:, 1] + n//2)%n
+                clusterdict[cx] = coords
+            except KeyError:
+                pass
+    if len(cly):
+        for cy in cly[:,0]:
+            try:
+                coords = clusterdict[cy]
+                coords[:,0] = (coords[:,0] + m//2)%m
+                clusterdict[cy] = coords
+            except KeyError:
+                pass
     
     # To store all the precipitates individually
     preci = []
@@ -233,8 +279,6 @@ def extract_precipitates(img, off_set = 1, wkey = False):
     if wkey:
         return preci, clus, preci_wkey
     return preci, clus
-
-clusterAliases = {}
 
 if __name__ == "__main__":
     # datContent = [i.strip().split() for i in open("./Comp1000.dat").readlines()]
@@ -287,7 +331,7 @@ if __name__ == "__main__":
     elif method == "HK":
         #Dict to store sizes and connections
         clusterAliases = {}
-        precipitates, _ = extract_precipitates(bin_img)
+        precipitates, _ = extract_precipitates(bin_img, off_set = 1)
 
     for preci in precipitates:
         preci = preci.astype(int)
