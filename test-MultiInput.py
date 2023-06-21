@@ -113,8 +113,8 @@ plt.figure(figsize=(8, 6))
 for i in range(areamat.shape[0]):
     plt.plot(x, areamat[i], label= key[i][0])
 
-plt.xlabel('ImageNumber')
-plt.ylabel('PrecipitateArea')
+plt.xlabel('Image Number')
+plt.ylabel('Precipitate Area')
 plt.legend(loc = "upper left", ncol = 2)
 plt.grid(True)
 plt.savefig(f"Results\\Multi Input\\AreavsTime.png", bbox_inches = "tight")
