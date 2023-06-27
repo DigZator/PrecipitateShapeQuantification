@@ -28,9 +28,9 @@ def get_aspect_ratio(preci, flip = True):
   z = 1
   for y in range(verlen):
     for x in range(horlen):
-      µ020 += ((x - barx)**0) * ((y - bary)**2) * (z**0) * preci[y,x]
-      µ200 += ((x - barx)**2) * ((y - bary)**0) * (z**0) * preci[y,x] 
-      µ110 += ((x - barx)**1) * ((y - bary)**1) * (z**0) * preci[y,x]
+      µ020 += ((x - barx + 1)**0) * ((y - bary + 1)**2) * (z**0) * preci[y,x]
+      µ200 += ((x - barx + 1)**2) * ((y - bary + 1)**0) * (z**0) * preci[y,x] 
+      µ110 += ((x - barx + 1)**1) * ((y - bary + 1)**1) * (z**0) * preci[y,x]
   inermat = np.array([[µ200, µ110],
                       [µ110, µ020]])
   w, v = np.linalg.eig(inermat)
