@@ -129,3 +129,43 @@ with open(fname, 'w', newline = '') as f:
     for imno in d.keys():
         for k in d[imno].keys():
             w.writerow([imno, k] + d[imno][k])
+
+def derivate(areamat):
+    deri = []
+    for row in areamat:
+        der = []
+        for i in range(len(row) - 1):
+            der.append(row[i+1] - row[i])
+        deri.append(der)
+    return deri
+
+deri = derivate(areamat)
+deri = np.array(deri)
+
+x = np.arange(deri.shape[1])
+plt.figure(figsize=(8, 6))
+for i in range(deri.shape[0]):
+    plt.plot(x, deri[i], label= key[i][0])
+
+plt.xlabel('Image Number')
+plt.ylabel('Precipitate Area')
+plt.legend(loc = "upper left", ncol = 2)
+plt.grid(True)
+plt.savefig(f"Results\\Multi Input\\DAreavsTime.png", bbox_inches = "tight")
+plt.show()
+
+labs = ["Label"] + list(key[:, 0])
+labs = np.array(labs)
+
+r, c = areamat.shape
+areamat = np.vstack((np.zeros((1, c)), areamat))
+labs = labs.reshape((r+1, 1))
+
+areamat = np.hstack((labs, areamat))
+
+for i in range(1, c+1):
+    areamat[0, i] = str(i)
+
+with open("Results\\Multi Input\\Areamat.csv", "w", newline = "") as f:
+    wrt = csv.writer(f)
+    wrt.writerows(areamat)
